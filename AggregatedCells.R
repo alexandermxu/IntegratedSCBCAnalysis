@@ -22,24 +22,38 @@ lowgenepercellthreshold <- 100
 # AX218 <- Genes
 # load("AX219genes")
 # AX219 <- Genes
+
+# colnames(IntegratedData) <- gsub("X", "AX219X", colnames(IntegratedData))
+# colnames(NoCellIntegratedData) <- gsub("X", "AX219X", colnames(NoCellIntegratedData))
+# save(list = c("IntegratedData", "NoCellIntegratedData"), file = "AX219alldata")
+
 print("Loading data")
 load("AX206alldata")
 AX206all <- IntegratedData
+AX206NoCell <- NoCellIntegratedData
 load("AX207alldata")
 AX207all <- IntegratedData
+AX207NoCell <- NoCellIntegratedData
 load("AX208alldata")
 AX208all <- IntegratedData
+AX208NoCell <- NoCellIntegratedData
 load("AX206Redoalldata")
 AX206Redoall <- IntegratedData
+AX206RedoNoCell <- NoCellIntegratedData
 load("AX208Redoalldata")
 AX208Redoall <- IntegratedData
+AX208RedoNoCell <- NoCellIntegratedData
 load("AX218alldata")
 AX218all <- IntegratedData
+AX218NoCell <- NoCellIntegratedData
 load("AX219alldata")
 AX219all <- IntegratedData
-
+AX219NoCell <- NoCellIntegratedData
+# save(list=c("AX206Vals","AX207Vals","AX208Vals","AX218Vals","AX219Vals","AX206Zeros","AX207Zeros","AX208Zeros","AX218Zeros","AX219Zeros","AX206RedoVals","AX208RedoVals","AX206RedoZeros","AX208RedoZeros"), file = "AllProteinValues")
 load("AllProteinValues")
-# AX206Vals <- data.frame(t(ProteinsPerBeads)), rownames(AX219Vals) <- gsub("X","AX219X",rownames(AX219Vals)), AX219Zeros <- AX219Vals[which(AX219Vals[,4]==0),]
+# AX206Vals <- data.frame(t(ProteinsPerBeads))
+# rownames(AX219Vals) <- gsub("X","AX219X",rownames(AX219Vals))
+# AX219Zeros <- AX219Vals[which(AX219Vals[,4]==0),]
 print("Applying normalization and background subtraction")
 AX206Background <- apply(AX206Zeros,2,mean)[1:3]
 AX207Background <- apply(AX207Zeros,2,mean)[1:3]
@@ -176,6 +190,59 @@ mito.genes <- grep(pattern = "^MT-", x = rownames(x = AX208RedoS@data), value = 
 percent.mito <- Matrix::colSums(AX208RedoS@raw.data[mito.genes, ])/Matrix::colSums(AX208RedoS@raw.data)
 AX208RedoS <- AddMetaData(object = AX208RedoS, metadata = percent.mito, col.name = "percent.mito")
 
+# U871 <- read.csv("GSM2794663_U87_con_1_Genes_ReadCount.txt", sep = "\t", row.names = 1)
+# colnames(U871) <- "U87Control1"
+# U872 <- read.csv("GSM2794664_U87_con_2_Genes_ReadCount.txt", sep = "\t", row.names = 1)
+# colnames(U872) <- "U87Control2"
+# 
+# HEKCombinedSingleCell <- CombinedGenesbyMerge@raw.data[,CombinedGenesbyMerge@meta.data$celltype=="HEK"]
+# U87CombinedSingleCell <- CombinedGenesbyMerge@raw.data[,CombinedGenesbyMerge@meta.data$celltype=="U87"]
+# U87CombinedSingleCell <- apply(U87CombinedSingleCell,1,mean)
+# HEKCombinedSingleCell <- apply(HEKCombinedSingleCell,1,mean)
+# 
+# BulkComp <- data.frame(cbind(U87CombinedSingleCell, HEKCombinedSingleCell))
+
+# CombinedS <- CreateSeuratObject(raw.data=BulkComp, project="CombinedCells")
+# CombinedS@meta.data$celltype <- "U87"
+# CombinedS <- FilterCells(CombinedS, subset.names=c("nUMI","nGene"), low.thresholds=c(lowUMIpercellthreshold,lowgenepercellthreshold), high.thresholds=c(Inf,Inf))
+# CombinedS <- NormalizeData(CombinedS, display.progress=F)
+# CombinedS <- ScaleData(CombinedS, display.progress=F)
+# CombinedS <- FindVariableGenes(CombinedS, do.plot = F, display.progress=F)
+# # AX208RedoS <- SetAssayData(AX208RedoS, assay.type = "SCBC", slot = "raw.data", new.data = AX208Redoall[((nrow(AX208Redoall)-3):(nrow(AX208Redoall)-1)),])
+# # AX208RedoS <- NormalizeData(AX208RedoS, assay.type = "SCBC", normalization.method = "genesCLR", display.progress = F)
+# # AX208RedoS <- ScaleData(AX208RedoS, assay.type = "SCBC", display.progress = F)
+# mito.genes <- grep(pattern = "^MT-", x = rownames(x = CombinedS@data), value = TRUE)
+# percent.mito <- Matrix::colSums(CombinedS@raw.data[mito.genes, ])/Matrix::colSums(CombinedS@raw.data)
+# CombinedS <- AddMetaData(object = CombinedS, metadata = percent.mito, col.name = "percent.mito")
+
+# # GSM2794664
+# U87S <- CreateSeuratObject(raw.data=U87BulkControls, project="U87Control1")
+# U87S@meta.data$celltype <- "U87"
+# U87S <- FilterCells(U87S, subset.names=c("nUMI","nGene"), low.thresholds=c(lowUMIpercellthreshold,lowgenepercellthreshold), high.thresholds=c(Inf,Inf))
+# U87S <- NormalizeData(U87S, display.progress=F)
+# U87S <- ScaleData(U87S, display.progress=F)
+# U87S <- FindVariableGenes(U87S, do.plot = F, display.progress=F)
+# # AX208RedoS <- SetAssayData(AX208RedoS, assay.type = "SCBC", slot = "raw.data", new.data = AX208Redoall[((nrow(AX208Redoall)-3):(nrow(AX208Redoall)-1)),])
+# # AX208RedoS <- NormalizeData(AX208RedoS, assay.type = "SCBC", normalization.method = "genesCLR", display.progress = F)
+# # AX208RedoS <- ScaleData(AX208RedoS, assay.type = "SCBC", display.progress = F)
+# mito.genes <- grep(pattern = "^MT-", x = rownames(x = U87S@data), value = TRUE)
+# percent.mito <- Matrix::colSums(U87S@raw.data[mito.genes, ])/Matrix::colSums(U87S@raw.data)
+# U87S <- AddMetaData(object = U87S, metadata = percent.mito, col.name = "percent.mito")
+# 
+# # GSM2599702
+# HEKS <- CreateSeuratObject(raw.data=UMI_count, project="HEK")
+# HEKS@meta.data$celltype <- "HEK"
+# HEKS <- FilterCells(HEKS, subset.names=c("nUMI","nGene"), low.thresholds=c(lowUMIpercellthreshold,lowgenepercellthreshold), high.thresholds=c(Inf,Inf))
+# HEKS <- NormalizeData(HEKS, display.progress=F)
+# HEKS <- ScaleData(HEKS, display.progress=F)
+# HEKS <- FindVariableGenes(HEKS, do.plot = F, display.progress=F)
+# # AX208RedoS <- SetAssayData(AX208RedoS, assay.type = "SCBC", slot = "raw.data", new.data = AX208Redoall[((nrow(AX208Redoall)-3):(nrow(AX208Redoall)-1)),])
+# # AX208RedoS <- NormalizeData(AX208RedoS, assay.type = "SCBC", normalization.method = "genesCLR", display.progress = F)
+# # AX208RedoS <- ScaleData(AX208RedoS, assay.type = "SCBC", display.progress = F)
+# mito.genes <- grep(pattern = "^MT-", x = rownames(x = HEKS@data), value = TRUE)
+# percent.mito <- Matrix::colSums(HEKS@raw.data[mito.genes, ])/Matrix::colSums(HEKS@raw.data)
+# HEKS <- AddMetaData(object = HEKS, metadata = percent.mito, col.name = "percent.mito")
+
 print("Adding protein values to Seurat")
 AX206NormalizedProteins <- AX206NormalizedProteins[rownames(AX206NormalizedProteins) %in% AX206S@cell.names,]
 AX206AllProts <- AX206NormalizedProteins
@@ -258,6 +325,9 @@ AllprotsallPlot[,1] <- as.factor(AllprotsallPlot[,1])
 Allprotsnormalizedplot <- melt(Allprotsnormalized, id=c("Cells", "Beads", "Chip"))
 Allprotsnormalizedplot$Chip <- as.factor(Allprotsnormalizedplot$Chip)
 Allprotsnormalizedplot$Cells <- as.factor(Allprotsnormalizedplot$Cells)
+Allprotsnormalizedplot["Celltype"] <- NA
+Allprotsnormalizedplot$Celltype[Allprotsnormalizedplot$Chip %in% c("AX206", "AX206Redo", "AX218", "AX219")] <- "U87"
+Allprotsnormalizedplot$Celltype[Allprotsnormalizedplot$Chip %in% c("AX208", "AX208Redo", "AX207")] <- "HEK"
 
 ggplot(Allprotsnormalizedplot) + geom_boxplot(aes(x=variable, y=value, fill=Chip), outlier.shape = 3)+geom_point(aes(x=variable, y=value, fill=Chip, size=Cells), position=position_dodge(width = 0.75), alpha=0.5)+scale_size_discrete(range = c(1,5))
 
@@ -279,6 +349,13 @@ GenestoUse <- intersect(GenestoUse, rownames(AX206RedoS@raw.data))
 GenestoUse <- intersect(GenestoUse, rownames(AX218S@raw.data))
 GenestoUse <- intersect(GenestoUse, rownames(AX219S@raw.data))
 
+HEKOnly <- MergeSeurat(AX207S, AX208S)
+HEKOnly <- MergeSeurat(HEKOnly, AX208RedoS)
+
+U87Only <- MergeSeurat(AX206S, AX206RedoS)
+U87Only <- MergeSeurat(U87Only, AX218S)
+U87Only <- MergeSeurat(U87Only, AX219S)
+
 CombinedGenesbyMerge <- MergeSeurat(AX206S, AX207S)
 CombinedGenesbyMerge <- MergeSeurat(CombinedGenesbyMerge, AX208S)
 CombinedGenesbyMerge <- MergeSeurat(CombinedGenesbyMerge, AX218S)
@@ -294,18 +371,35 @@ CombinedGenesbyMerge <- SetAssayData(CombinedGenesbyMerge, assay.type = "SCBC", 
 CombinedGenesbyMerge <- NormalizeData(CombinedGenesbyMerge, assay.type = "SCBC", normalization.method = "genesCLR", display.progress = F)
 CombinedGenesbyMerge <- ScaleData(CombinedGenesbyMerge, assay.type = "SCBC", display.progress = F)
 print("Analyzing combined data")
-CombinedGenesbyMerge@var.genes <- GenestoUse
-CombinedGenesbyMerge <- ScaleData(CombinedGenesbyMerge, vars.to.regress = c("nUMI", "orig.ident"))
+source("BulkComp.R")
+# CombinedGenesbyMerge@var.genes <- GenestoUse
+# CombinedGenesbyMerge@var.genes <- rownames(CombinedGenesbyMerge@raw.data)[rownames(CombinedGenesbyMerge@raw.data) %in% rownames(resOrdered)]
+CombinedGenesbyMerge@var.genes <- TestBulkvar
+CombinedGenesbyMerge <- NormalizeData(CombinedGenesbyMerge, display.progress = F)
+CombinedGenesbyMerge <- ScaleData(CombinedGenesbyMerge, vars.to.regress = c("nUMI"), display.progress = F)
 CombinedGenesbyMerge <- RunPCA(object = CombinedGenesbyMerge, pc.genes = CombinedGenesbyMerge@var.genes, do.print = TRUE, pcs.print = 1:5, genes.print = 5)
 
 
+
+# CombinedGenesbyMergePlusBulks <- MergeSeurat(CombinedS, U87S)
+# # CombinedGenesbyMergePlusBulks <- MergeSeurat(CombinedGenesbyMergePlusBulks, HEKS)
+# CombinedGenesbyMergePlusBulks@var.genes <- GenestoUse
+# CombinedGenesbyMergePlusBulks <- ScaleData(CombinedGenesbyMergePlusBulks, vars.to.regress = c("nUMI", "orig.ident"))
+# CombinedGenesbyMergePlusBulks <- RunPCA(object = CombinedGenesbyMergePlusBulks, pc.genes = CombinedGenesbyMergePlusBulks@var.genes, do.print = TRUE, pcs.print = 1:5, genes.print = 5)
+# CombinedGenesbyMergePlusBulks <- ProjectPCA(object = CombinedGenesbyMergePlusBulks)
+# CombinedGenesbyMergePlusBulks <- JackStraw(object = CombinedGenesbyMergePlusBulks, num.replicate = 50, display.progress = FALSE)
+# CombinedGenesbyMergePlusBulks <- FindClusters(object = CombinedGenesbyMergePlusBulks, reduction.type = "pca", dims.use = 1:20, resolution = 1.1, print.output = 0, save.SNN = TRUE, force.recalc=TRUE)
+# CombinedGenesbyMergePlusBulks <- RunTSNE(object = CombinedGenesbyMergePlusBulks, dims.use = 1:20, do.fast = TRUE)
+# cluster1.markers <- FindMarkers(object = CombinedGenesbyMergePlusBulks, ident.1 = 1, min.pct = 0.25)
+# CombinedGenesbyMergePlusBulks.markers <- FindAllMarkers(object = CombinedGenesbyMergePlusBulks, only.pos = TRUE, min.pct = 0.25, thresh.use = 0.25)
+
 VizPCA(object = CombinedGenesbyMerge, pcs.use = 1:2)
-PCAPlot(object = CombinedGenesbyMerge, dim.1 = 1, dim.2 = 2)
+PCAPlot(object = CombinedGenesbyMerge, dim.1 = 1, dim.2 = 2, group.by = "celltype")
 CombinedGenesbyMerge <- ProjectPCA(object = CombinedGenesbyMerge)
 PCHeatmap(object = CombinedGenesbyMerge, pc.use = 1, do.balanced = TRUE, label.columns = FALSE)
 CombinedGenesbyMerge <- JackStraw(object = CombinedGenesbyMerge, num.replicate = 50, display.progress = FALSE)
-JackStrawPlot(object = CombinedGenesbyMerge, PCs = 1:20)
-PCElbowPlot(object = CombinedGenesbyMerge)
+# JackStrawPlot(object = CombinedGenesbyMerge, PCs = 1:20)
+# PCElbowPlot(object = CombinedGenesbyMerge)
 CombinedGenesbyMerge <- FindClusters(object = CombinedGenesbyMerge, reduction.type = "pca", dims.use = 1:20, resolution = 1.1, print.output = 0, save.SNN = TRUE, force.recalc=TRUE)
 PrintFindClustersParams(object = CombinedGenesbyMerge)
 CombinedGenesbyMerge <- RunTSNE(object = CombinedGenesbyMerge, dims.use = 1:20, do.fast = TRUE)
@@ -319,12 +413,17 @@ Metadata[,"GeneCellRatio"] <- Metadata[,1]/Metadata[,6]
 Metadata[,"GeneBeadRatio"] <- Metadata[,1]/Metadata[,7]
 Metadata[,"CellBeadRatio"] <- Metadata[,7]/Metadata[,6]
 
-ggplot(Metadata, aes(x=Beads, y=nGene))+geom_point()+geom_smooth(method='lm',formula=y~x) + scale_x_continuous(breaks=seq(0,11,1))
+NoCellIncludedMetadata <- data.frame(t(cbind(tail(AX206NoCell,6),tail(AX206RedoNoCell,6),tail(AX207NoCell,6),tail(AX208NoCell,6),tail(AX208RedoNoCell,6),tail(AX218NoCell,6),tail(AX219NoCell,6))))
 
 TSNEPlot(object = CombinedGenesbyMerge, group.by = "orig.ident", pt.size = 3)
 
-RidgePlot(CombinedGenesbyMerge, features.plot = c("B","C","D"), 
-          nCol = 2, group.by = "celltype")
+# Figure 3 B 
+TSNEPlot(object = CombinedGenesbyMerge, group.by = "celltype", pt.size = 4, colors.use = c(NineColScheme[1], NineColScheme[6]), no.legend = TRUE)
+
+
+RidgePlot(CombinedGenesbyMerge, features.plot = c("B","C","D"), nCol = 2, group.by = "celltype")
+ggplot(Metadata, aes(x=Beads, y=nGene))+geom_point()+geom_smooth(method='lm',formula=y~x) + scale_x_continuous(breaks=seq(0,11,1)) + coord_fixed(ratio = 11/4000) + theme(text=element_text(family="Calibri"))
+ggplot(Metadata, aes(x=Cells, y=nGene))+geom_point()+geom_smooth(method='lm',formula=y~x) + scale_x_continuous(breaks=seq(0,11,1)) + coord_fixed(ratio = 9/4000) + theme(text=element_text(family="Calibri"))
 
 # cbmc_cite <- RunPCA(CombinedGenesbyMerge, pc.genes = c("B","C","D"), assay.type = "SCBC", pcs.print = 0, pcs.compute = 1:5)
 # PCAPlot(cbmc_cite, pt.size = 3, group.by="celltype")
@@ -368,8 +467,8 @@ for (n in 1:3)
   
   SignificanceTable <- data.frame(cbind(Rsquared=unlist(Rsquared), SpearmanPValues, PearsonPValues))
   SignificanceTable <- cbind(SignificanceTable, RsquaredThres=SignificanceTable[,"Rsquared"]>0.4,
-                             SpearmanPValuesThres=SignificanceTable[,"SpearmanPValues"]<0.15,
-                             PearsonPValuesThres=SignificanceTable[,"PearsonPValues"]<0.15)
+                             SpearmanPValuesThres=SignificanceTable[,"SpearmanPValues"]<0.05,
+                             PearsonPValuesThres=SignificanceTable[,"PearsonPValues"]<0.05)
   SignificanceTable <- cbind(SignificanceTable, SoftHit=SignificanceTable[,"RsquaredThres"]|SignificanceTable[,"SpearmanPValuesThres"]|SignificanceTable[,"PearsonPValuesThres"],
                              HardHit=SignificanceTable[,"RsquaredThres"]&SignificanceTable[,"SpearmanPValuesThres"]&SignificanceTable[,"PearsonPValuesThres"])
   assign(paste0(FileName,Target,"SignificanceTable"), SignificanceTable)
@@ -385,8 +484,135 @@ colnames(GenesofInterest) <- ProteinNames
 GenesofInterest[is.na(GenesofInterest)] <- ""
 library(xlsx)
 write.xlsx(GenesofInterest, paste0(FileName, "GenesofInterest.xlsx"), row.names = FALSE)
-ggplot(Metadata) +geom_violin(aes(x="nUMI", y=nUMI), width=0.7, fill="red")+ geom_jitter(aes(x="nUMI", y=nUMI), width=0.2, size=4, alpha=0.6)+geom_violin(aes(x="nGene", y=nGene), width=0.7)+ geom_jitter(aes(x="nGene", y=nGene), width=0.2, size=4, alpha=0.6)+theme(text=element_text(family="Calibri"))+ylab(label = "Counts")+xlab(label = "Metric")
+ggplot(Metadata) + 
+  geom_violin(aes(x="nUMI", y=nUMI), width=0.7, fill="red") + 
+  geom_jitter(aes(x="nUMI", y=nUMI), width=0.2, size=4, alpha=0.6) +
+  geom_violin(aes(x="nGene", y=nGene), width=0.7) + 
+  geom_jitter(aes(x="nGene", y=nGene), width=0.2, size=4, alpha=0.6) +
+  theme(text=element_text(family="Calibri")) +
+  labs(x = "Counts", y = "Metric")
 ggplot(IntegratedSeuratDataset, aes(x=B, y=ITGA10))+geom_point()+geom_smooth(method='lm',formula=y~x)
-ggplot(AllprotsallPlot, aes(x=variable, y=value, color=Cells)) + geom_jitter(width=0.3, size=4, alpha=0.6)+scale_color_manual(values=rev(viridis(9)))+ggtitle("Proteins")+ylab("Fluorescence (arbitrary units)")+xlab("Protein")+theme(legend.position = c(0.8,0.8), text=element_text(family="Calibri"))
-ggplot(Allprotsnormalizedplot) + geom_boxplot(aes(x=variable, y=value, fill=Chip), outlier.shape = 3)+geom_point(aes(x=variable, y=value, fill=Chip, size=Cells), position=position_dodge(width = 0.75), alpha=0.5)+scale_size_discrete(range = c(1,5))+theme(text=element_text(family="Calibri"))
+ggplot(AllprotsallPlot, aes(x=variable, y=value, color=Cells)) + 
+  geom_jitter(width=0.3, size=4, alpha=0.6) +
+  scale_color_manual(values=rev(viridis(9))) +
+  ggtitle("Proteins") +
+  ylab("Fluorescence (arbitrary units)") +
+  xlab("Protein") +
+  theme(legend.position = c(0.8,0.8), text=element_text(family="Calibri"))
+ggplot(Allprotsnormalizedplot) + 
+  geom_boxplot(aes(x=variable, y=value, fill=Chip), outlier.shape = 3) +
+  # geom_point(aes(x=variable, y=value, fill=Chip, size=Cells), position=position_dodge(width = 0.75), alpha=0.5) +
+  scale_size_discrete(range = c(1,5)) +
+  theme(text=element_text(family="Calibri"))
 # viridis(9)
+
+AllprotsnormalizedNoRep <- rbind(AX206NormalizedProteins,AX207NormalizedProteins,AX208NormalizedProteins,AX218NormalizedProteins,AX219NormalizedProteins)
+# Allprotsall <- rbind(AX206AllProts,AX207AllProts,AX208AllProts,AX218AllProts,AX219AllProts, AX206RedoAllProts, AX208RedoAllProts)
+# Allprotsall["Chip"] <- gsub(pattern = "*X(.*)", replacement="", x=gsub(pattern = "AX",replacement="A", x=rownames(Allprotsall)))
+# colnames(Allprotsall)[1:3] <- c("PKM2","c-MYC","PDHK1")
+# AllprotsallPlot <- melt(Allprotsall, id=c("Cells","Beads", "Chip"))
+# AllprotsallPlot[,1] <- as.factor(AllprotsallPlot[,1])
+colnames(AllprotsnormalizedNoRep)[1:3] <- c("PKM2", "c-MYC", "PDHK1")
+AllprotsnormalizedplotNoRep <- melt(AllprotsnormalizedNoRep, id=c("Cells", "Beads", "Chip"))
+AllprotsnormalizedplotNoRep$Chip <- as.factor(AllprotsnormalizedplotNoRep$Chip)
+AllprotsnormalizedplotNoRep$Cells <- as.factor(AllprotsnormalizedplotNoRep$Cells)
+AllprotsnormalizedplotNoRep["Celltype"] <- NA
+AllprotsnormalizedplotNoRep$Celltype[AllprotsnormalizedplotNoRep$Chip %in% c("AX206", "AX218", "AX219")] <- "U87"
+AllprotsnormalizedplotNoRep$Celltype[AllprotsnormalizedplotNoRep$Chip %in% c("AX208", "AX207")] <- "HEK"
+BProts <- AllprotsnormalizedplotNoRep[AllprotsnormalizedplotNoRep$variable=="PKM2",]
+CProts <- AllprotsnormalizedplotNoRep[AllprotsnormalizedplotNoRep$variable=="c-MYC",]
+DProts <- AllprotsnormalizedplotNoRep[AllprotsnormalizedplotNoRep$variable=="PDHK1",]
+t.test(BProts$value ~ CProts$Celltype)
+t.test(CProts$value ~ CProts$Celltype)
+t.test(DProts$value ~ DProts$Celltype)
+
+
+
+# Figure 3 A Set width to 500
+
+ggplot(AllprotsnormalizedplotNoRep) + 
+  geom_boxplot(aes(x=variable, y=value, fill=Celltype), outlier.shape = 3, width = 0.5) +
+  scale_size_discrete(range = c(1,5)) +
+  scale_fill_manual(values=c(NineColScheme[1], NineColScheme[6])) + 
+  theme(text = element_text(family = "Arial"), legend.position = c(0, 0.9)) + 
+  coord_fixed(ratio = 1/80) +
+  labs(x="Protein", y="Fluorescence (a.u.)") +
+  theme(text=element_text(family="Arial", size = 15))
+
+
+
+# Supfig 3 A 
+
+ggplot(AllprotsnormalizedplotNoRep[AllprotsnormalizedplotNoRep$Celltype=="U87",]) +
+geom_boxplot(aes(x=variable, y=value, fill=Chip), outlier.shape = 3, width = 0.5) +
+scale_fill_manual(values=c(NineColScheme[1],NineColScheme[5],NineColScheme[6])) +
+theme(text = element_text(family = "Arial"), legend.position = "none") +
+scale_y_continuous(limits = c(-8,240)) +
+coord_fixed(ratio = 1/100) +
+labs(x="Protein", y="Fluorescence (a.u.)") +
+theme(text=element_text(family="Arial", size = 15)) 
+
+t.test(CProts$value ~ CProts$Celltype)
+
+  
+ggplot(AllprotsnormalizedplotNoRep[AllprotsnormalizedplotNoRep$Celltype=="HEK",]) +
+geom_boxplot(aes(x=variable, y=value, fill=Chip), outlier.shape = 3, width = 0.5) +
+scale_fill_manual(values=c(NineColScheme[1],NineColScheme[6])) +
+theme(text = element_text(family = "Arial"), legend.position = "none") +
+scale_y_continuous(limits = c(-5,240)) +
+coord_fixed(ratio = 1/80) +
+labs(x="Protein", y="Fluorescence (a.u.)") +
+theme(text=element_text(family="Arial", size = 15))
+
+
+Allcellrawmeta <- rbind(AX206Vals, AX207Vals, AX208Vals, AX218Vals, AX219Vals, AX206RedoVals, AX208RedoVals)
+ggplot(Allcellrawmeta) + geom_jitter(aes(x=Cells, y=Beads), width = 0.2, height = 0.1, alpha = 0.3)
+
+# Figure 2 b. Reduce width by 33%
+
+NoCellIncludedMetadata <- NoCellIncludedMetadata[NoCellIncludedMetadata$Cells<7,]
+NoCellIncludedMetadata <- NoCellIncludedMetadata[NoCellIncludedMetadata$Cells<7,]
+NoCellIncludedMetadata$Cells <- factor(NoCellIncludedMetadata$Cells)
+ggplot(NoCellIncludedMetadata, aes(x=Cells, fill=Cells, y=TotalReads/Beads)) + 
+  geom_boxplot(aes(group = Cells), alpha = 0.4, outlier.color = NA) + 
+  geom_jitter(width=0.1) +
+  scale_fill_manual(values = NineColScheme) +
+  labs(x="Cells", y="Reads per bead") +
+  theme(text=element_text(family="Arial", size = 15), legend.position = "none")
+
+CountHeatmap <- data.frame(as.matrix(NoCellIncludedMetadata[,c("Cells", "Beads")] %>% table)) #%>% group_by(Digital, Physical)
+CountHeatmap$Cells <- as.numeric(as.character(CountHeatmap$Cells))
+CountHeatmap$Beads <- as.numeric(as.character(CountHeatmap$Beads))
+
+ggplot(CountHeatmap, aes(y=Cells, x=Beads, color=Freq))+geom_point(size = 9)+scale_color_gradientn(colors = c("#FFFFFF",NineColScheme[1:5]))+scale_x_continuous(breaks=0:max(CountHeatmap$Beads),limits = c(0,max(CountHeatmap$Beads)))+scale_y_continuous(breaks = 0:max(CountHeatmap$Cells), limits = c(0,max(CountHeatmap$Cells)))+theme(text=element_text(family="Arial", size = 15))+coord_fixed(ratio=1)
+ggplot(NoCellIncludedMetadata) + geom_point(aes(x=Beads, y=TotalReads))
+
+# SupFig 2 B
+TestS <- AX206RedoS
+colnames(TestS@scale.data) <- gsub("AX206Redo", "", colnames(TestS@scale.data))
+colnames(TestS@scale.data) <- gsub("-.", " ", colnames(TestS@scale.data))
+colnames(TestS@scale.data) <- gsub("Y", "Y-", colnames(TestS@scale.data))
+colnames(TestS@scale.data) <- gsub("X", "X-", colnames(TestS@scale.data))
+heatmap.2(as.matrix(TestS@scale.data), trace = "none", margins = c(5,2), labRow = FALSE)
+heatmap.2(as.matrix(TestS@scale.data[TestS@var.genes,]), trace = "none", margins = c(5,2), labRow = FALSE)
+
+heatmap.2(as.matrix(AX206RedoS@scale.data), trace="none", margins = c(8,5), labRow = FALSE)
+VlnPlot(object = CombinedGenesbyMerge, features.plot = c("nGene", "nUMI", "percent.mito"), nCol = 3, group.by = "orig.ident", y.lab.rot = TRUE)
+
+FeaturePlot(CombinedGenesbyMerge, features.plot = c("B","C","D"), cols.use = c("lightgrey", "blue"), pt.size = 2, nCol = 1)
+
+# SupFig 2
+
+ggplot(Metadata, aes(fill=celltype)) + 
+  geom_violin(aes(x="Genes", y=nGene), scale = "count") +
+  geom_violin(aes(x="Transcripts", y=nUMI), scale = "count") +
+  coord_fixed(ratio = 1/10000) +
+  scale_fill_manual(values = c(NineColScheme[1],NineColScheme[6])) +
+  labs(y="Counts") +
+  theme(text=element_text(family="Arial", size = 15), legend.position = "none")
+
+VlnPlot(object = CombinedGenesbyMerge, features.plot = c("nGene", "nUMI", "percent.mito"), nCol = 3, group.by = "orig.ident", y.lab.rot = TRUE)
+
+#SupFig3 
+
+FeaturePlot(CombinedGenesbyMerge, features.plot = c("D"), cols.use = c("lightgrey", NineColScheme[6]), pt.size = 4)

@@ -5,7 +5,7 @@ library(Matrix)
 library(gplots)
 
 GeneAnalysis <- TRUE
-GeneSource <- "C:/Users/alexm/Dropbox (Personal)/AX206-8/AX208Redo/"
+GeneSource <- "C:/Users/alexm/Dropbox (Personal)/AX206-8/AX218/"
 
 setwd("C:/Users/alexm/Documents/ProteinChips/")
 
@@ -34,13 +34,13 @@ PyruvateTargets <- read.table("PYRUVATE.txt", as.is = TRUE)
 # Beads <- c(6,9,7,2,4,7,7,5,4,2,12,3,
 #            5,1,2,3,2,1,2,16,1,2,2,2,
 #            2,2,2,0,2,3,0,0,2,1,6,1)
-FileName <- "AX208"
-Cells <- c(0,0,1,1,1,1,6,1,1,5,2,1,
-           5,2,0,4,1,1,0,0,1,0,0,0,
-           0,0,0,0,4,2,0,0,1,0,0,0)
-Beads <- c(0,2,1,1,1,2,0,4,4,3,7,2,
-           1,4,3,5,2,3,0,0,0,0,0,0,
-           1,7,10,1,1,2,0,0,0,0,0,0)
+# FileName <- "AX208"
+# Cells <- c(0,0,1,1,1,1,6,1,1,5,2,1,
+#            5,2,0,4,1,1,0,0,1,0,0,0,
+#            0,0,0,0,4,2,0,0,1,0,0,0)
+# Beads <- c(0,2,1,1,1,2,0,4,4,3,7,2,
+#            1,4,3,5,2,3,0,0,0,0,0,0,
+#            1,7,10,1,1,2,0,0,0,0,0,0)
 
 
 # Psecond
@@ -58,13 +58,13 @@ Beads <- c(0,2,1,1,1,2,0,4,4,3,7,2,
 # Beads <- c(2,1,2,0,2,1,3,6,6,11,10,0,
 #            7,9,6,7,3,2,5,2,6,3,4,10,
 #            5,5,3,4,4,2,1,2,1,3,3,5)
-# FileName <- "AX219"
-# Cells <- c(1,3,1,0,1,2,5,0,2,2,4,5,
-#            2,4,2,6,2,6,0,6,0,2,4,0,
-#            0,6,2,1,1,0,2,0,0,2,1,0) #maybe 1 in first of this block
-# Beads <- c(1,6,8,2,4,7,9,8,4,6,2,5,
-#            6,7,2,5,4,7,4,6,7,3,3,5,
-#            13,5,4,4,4,4,9,8,11,9,7,3)
+FileName <- "AX219"
+Cells <- c(1,3,1,0,1,2,5,0,2,2,5,4,
+           2,4,2,6,2,6,0,6,0,2,4,0,
+           1,6,2,1,1,0,2,0,0,2,1,0) #maybe 1 in first of this block
+Beads <- c(1,6,8,2,4,7,9,8,4,6,2,5,
+           6,7,2,5,4,7,4,6,7,3,3,5,
+           13,5,4,4,3,4,9,8,11,9,7,3)
 
 Barcodes <- c("B", "C", "D")
 File <- read.xlsx(paste0(FileName,".xlsx"), sheetIndex = 2)
@@ -82,7 +82,7 @@ Group2 <- c(7:12, 19:24, 31:36)
 Registry1 <- c(NA,NA,NA,NA,"B","C","D",NA,NA,NA,NA)
 Registry2 <- c(NA,NA,NA,"D","C","B",NA,NA,NA,NA,NA)
 A1TopRight <- c(36,25,24,13,12,1,35,26,23,14,11,2,34,27,22,15,10,3,33,28,21,16,9,4,32,29,20,17,8,5,31,30,19,18,7,6)
-# F1TopRight <- c()
+# F1TopRight <- c(6,7,18,19,30,31,5,8,17,20,29,32,4,9,16,21,28,33,3,10,15,22,27,34,2,11,14,23,26,35,1,12,13,24,25,36)
 KeepData <- c("Block", "Row", "F635.Mean", "F532.Mean")
 Entries <- length(KeepData)
 
@@ -119,14 +119,16 @@ Output[,Entries+3] <- Beads[as.numeric(as.character(Output[,Entries+1]))]
 colnames(Output) <- c("Block", "Barcode", "Mean635", "Mean532", "Chamber", "Cells", "Beads")
 # colnames(Output) <- c("Block", "Barcode", "Mean635", "Mean594", "Mean532", "Mean488", "Chamber", "Cells")
 
-Output["Normalized635"] <- NA
+Output["Normalized635"] <- Output[,"Mean635"]/Output[,"Cells"]
 
 ZeroCellChambers <- Output[Output["Cells"]==0,][c("Barcode", "Mean635")]
 
 BackgroundValues <- ddply(ZeroCellChambers, .(Barcode), numcolwise(mean))
 
 
-RawPlot <- ggplot(Output, aes(x=Barcode,y=Mean635,label=Block)) + geom_jitter(aes(color=factor(Cells)), width=0.3, size=4, alpha=0.4) + labs(title=FileName)
+RawPlot <- ggplot(Output, aes(x=Barcode,y=Mean635,label=Block)) + 
+  geom_jitter(aes(color=factor(Cells)), width=0.3, size=4, alpha=0.4) + 
+  labs(title=FileName)
 assign(paste0(FileName, "RawPlot"), RawPlot)
 
 NormOutput <- Output
@@ -147,14 +149,20 @@ assign(paste0(FileName, "NormPlot"), NormPlot)
 write.csv(Output, file = paste0(FileName,"Output.csv"))
 
 if(GeneAnalysis==TRUE)
-{A1TopRightBarcodeConversion <- c("X6-FY1-1","X5-EY1-1","X4-DY1-1","X3-CY1-1","X2-BY1-1","X1-AY1-1",
-                                 "X6-FY2-2","X5-EY2-2","X4-DY2-2","X3-CY2-2","X2-BY2-2","X1-AY2-2",
+{
+  # A1TopRightBarcodeConversion <- c("X6-FY1-1","X5-EY1-1","X4-DY1-1","X3-CY1-1","X2-BY1-1","X1-AY1-1",
+  #                                "X6-FY2-2","X5-EY2-2","X4-DY2-2","X3-CY2-2","X2-BY2-2","X1-AY2-2",
+  #                                "X6-FY3-3","X5-EY3-3","X4-DY3-3","X3-CY3-3","X2-BY3-3","X1-AY3-3",
+  #                                "X6-FY4-4","X5-EY4-4","X4-DY4-4","X3-CY4-4","X2-BY4-4","X1-AY4-4",
+  #                                "X6-FY5-5","X5-EY5-5","X4-DY5-5","X3-CY5-5","X2-BY5-5","X1-AY5-5",
+  #                                "X6-FY6-6","X5-EY6-6","X4-DY6-6","X3-CY6-6","X2-BY6-6","X1-AY6-6")
+
+A1TopRightBarcodeConversion <- c("X6-FY1-1","X5-EY1-1","X4-DY1-1","X3-CY1-1","X2-BY1-1","X1-AY1-1",
+                                 "X1-AY2-2","X2-BY2-2","X3-CY2-2","X4-DY2-2","X5-EY2-2","X6-FY2-2",
                                  "X6-FY3-3","X5-EY3-3","X4-DY3-3","X3-CY3-3","X2-BY3-3","X1-AY3-3",
-                                 "X6-FY4-4","X5-EY4-4","X4-DY4-4","X3-CY4-4","X2-BY4-4","X1-AY4-4",
+                                 "X1-AY4-4","X2-BY4-4","X3-CY4-4","X4-DY4-4","X5-EY4-4","X6-FY4-4",
                                  "X6-FY5-5","X5-EY5-5","X4-DY5-5","X3-CY5-5","X2-BY5-5","X1-AY5-5",
-                                 "X6-FY6-6","X5-EY6-6","X4-DY6-6","X3-CY6-6","X2-BY6-6","X1-AY6-6")
-
-
+                                 "X1-AY6-6","X2-BY6-6","X3-CY6-6","X4-DY6-6","X5-EY6-6","X6-FY6-6")
 setwd(GeneSource)
 
 Genes <- read.table("output.dge.txt.gz", header=TRUE, row.names=1)
@@ -171,7 +179,9 @@ TotalGenes <- apply(Genes,1,sum)>15
 
 VarianceGenes <- apply(Genes,1,var)>2
 
-GenesSelected <- MaxGenes & VarianceGenes & TotalGenes
+PresentGenes <- apply(Genes,1,median)>0
+
+GenesSelected <- MaxGenes & VarianceGenes & TotalGenes #& PresentGenes
 
 GenesNormalizedByExpression <- Genes / apply(Genes, 2, sum)[col(Genes)]*10000
 
@@ -210,7 +220,6 @@ CellBeadPositiveBarcodes <- ProteinsPerBeads["Cells",]>0
 HitThresholdChambers <- apply(Genes,2,sum)>500
 
 KeptChambers <- CellBeadPositiveBarcodes & HitThresholdChambers
-
 GenesWithCells <- Genes[,KeptChambers]
 
 
@@ -230,7 +239,9 @@ rownames(SDNormalizedProteins) <- c("PKMprotein", "CMYCprotein", "PDHK1protein")
 rownames(SDNormalizedNoLogProteins) <- c("PKMprotein", "CMYCprotein", "PDHK1protein")
 
 IntegratedData <- rbind(GenesWithCells, ProteinsPerBeads[,KeptChambers], BGSubtractedProteins, CellNormalizedBGSProteins, "TotalReads"=TotalReads[KeptChambers])
+NoCellIntegratedData <- rbind(Genes, ProteinsPerBeads, "TotalReads"=TotalReads)
 
+SingleCellChambers <- IntegratedData["Cells",]==1
 # IntegratedDataPositiveCells <- IntegratedData[,CellBeadPositiveBarcodes]
 write.csv(x=IntegratedData, file=paste0(FileName,"FullData.csv"))
 
@@ -258,7 +269,7 @@ LinearModelInitial <- rbind(GenesForLinearModel[,KeptChambers], SDNormalizedProt
 
 LinearModelTranspose <- data.frame(t(LinearModelInitial))
 
-LinearModelData <- LinearModelTranspose / apply(LinearModelTranspose,2,max)[col(LinearModelTranspose)]
+LinearModelData <- (LinearModelTranspose / apply(LinearModelTranspose,2,max)[col(LinearModelTranspose)])
 
 # LinearModelData <- LinearModelDatawNA[,colnames(LinearModelDatawNA)[!is.na(apply(LinearModelDatawNA,2,max))]]
 GenesofInterest <- list()
